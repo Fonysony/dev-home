@@ -1,0 +1,19 @@
+h1 {
+    color: turquoise;
+}
+
+div {
+    display: inline-block;
+    text-align: center;
+    margin: 1rem;
+    width: 90px;
+    height: 90px;
+}
+img {
+    display: block;
+}
+
+a {
+    width: 20px;
+    height: 20px;
+}

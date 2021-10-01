@@ -1,0 +1,21 @@
+h1 {
+    color: turquoise;
+}
+
+#console {
+    width: 700px;
+    height: 500px;
+    max-width: 700px;
+    max-height: 500px;
+    margin: auto;
+    overflow-x: hidden;
+    display: flex;
+    justify-self: center;
+    flex-direction: column;
+    border: 1px solid black;
+}
+
+p {
+    margin: 18px 0 18px;
+    border-bottom: 1px solid black;
+}

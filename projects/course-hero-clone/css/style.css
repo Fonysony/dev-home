@@ -1,0 +1,291 @@
+html {
+    line-height: 1.6;
+}
+
+body {
+    width: 100vw;
+    height: 100vh;
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    margin-top: 0;
+    margin-bottom: 0;
+    font-weight: 500;
+}
+
+a {
+    text-decoration: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+p {
+    margin: 0;
+}
+
+/* Header */
+
+header {
+    background-color: #001a96;
+    height: 60px;
+    padding-left: 54px;
+    text-align: center;
+}
+
+header a {
+    display: block;
+    padding: 10px 54px 6px 0;
+}
+
+#header-logo {
+    height: 40px;
+    width: 11.25rem;
+}
+
+
+/* Main Content */
+
+#main-point {
+    flex-basis: 60%;
+    padding-right: 1.5rem;
+}
+
+.main-points {
+}
+
+.main-points h3 {
+    margin-right: 2.5rem;
+}
+
+.point-container {
+    margin-top: 2rem;
+    margin-right: 1rem;
+    padding: 1.5rem;
+}
+
+.point-container h2 span {
+    color: #30a04d;
+}
+
+/* Points Items */
+
+.points-item {
+    display: flex;
+    align-items: center;
+    margin-top: 1rem;
+}
+
+.points-item p {
+    font-size: 1rem;
+    font-weight: 300;
+    padding-left: 3rem;
+}
+
+
+
+/* Login to Account */
+
+#main-form {
+    flex-basis: 40%;
+}
+
+.login-form {
+    padding: 1rem;
+}
+
+.login-form h1 {
+    font-size: 1.4rem;
+    margin-bottom: 1rem;
+}
+
+
+/* Form */
+
+.form-group {
+    margin-bottom: 1.2rem;
+}
+
+
+/* User Input */
+
+.form-control {
+    display: block;
+    box-sizing: border-box;
+    width: 100%;
+    background-color: #fff;
+    border: 1px solid #dde0e3;
+    border-radius: .2rem;
+    padding: 1rem 2.5rem 1rem 1rem;
+}
+
+
+/* Form Password */
+
+#password {
+    display: flex;
+    justify-content: space-between;
+}
+
+/* Form Check */
+
+#check {
+    position: relative;
+}
+
+#check input {
+    display: inline-block;
+    width: 1.2rem;
+    height: 1.2rem;
+}
+
+#check label {
+    position: absolute;
+    bottom: .3rem;
+    margin-left: .5rem;
+}
+
+
+/* Form Buttons */
+
+.form-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    border: 1px solid #f0f1f2;
+    border-radius: .4rem;
+    padding: .9rem 1.6rem;
+    cursor: pointer;
+}
+
+#log-in {
+    color: #fff;
+    background-color: #e633ad;
+    font-size: 1.1rem;
+}
+
+#or {
+    margin-bottom: 1rem;
+    text-align: center;
+    font-size: 1rem;
+    font-weight: 400;
+}
+
+.log-icon {
+    display: flex;
+    align-items: center;
+    width: 20px;
+    height: 18px;
+    margin-right: 1rem;
+}
+
+#log-google {
+    color: #888;
+    background-color: #fff;
+    font-size: 1.1rem;
+}
+
+#google-icon {
+    background: url(../images/google-icon.svg) no-repeat;
+}
+
+#log-facebook {
+    color: #fff;
+    background-color: #4267b2;
+    font-size: 1.1rem;
+}
+
+#facebook-icon {
+    background: url(../images/facebook-icon-white.svg) no-repeat;
+}
+
+#log-apple {
+    color: #fff;
+    background-color: #16192b;
+    font-size: 1.2rem;
+}
+
+#permission {
+    font-size: .75rem;
+    margin-bottom: 2rem;
+}
+
+
+/* Media Querys */
+
+/* Desktop View */
+@media only screen and (min-width: 765px) {
+
+    /* Main Content */
+
+    #container {
+        display: flex;
+        max-width: 720px;
+        margin: 3rem auto 0rem auto;
+        padding: 0rem .75rem;
+    }
+
+    #main-point {
+        max-width: 53.5%;
+    }
+
+    .point-container, #main-form {
+        border: 1px solid #dde0e3;
+        border-radius: 4px;
+    }
+
+    /* Login to Account */
+
+    #main-form {
+        max-width: 40%;
+    }
+
+}
+
+@media only screen and (min-width: 960px) {
+    
+    /* Main Content */
+
+    #container {
+        max-width: 960px;
+    }
+
+    .main-points {
+        font-size: 1.3rem;
+    }
+
+    .point-container h2 {
+        font-size: 1.35rem;
+    }
+
+
+    /* Login to Account */
+
+    .login-form h1 {
+        font-size: 1.32rem;
+    }
+
+}
+
+
+/* Mobile View */
+@media only screen and (max-width: 765px) {
+
+    /* Main Content */
+
+    #main-point {
+        display: none;
+    }
+
+
+    /* Login Form */
+
+    #main-form {
+        max-width: 540px;
+        margin: 0 auto;
+        padding: 1rem 2rem;
+    }
+
+}
+

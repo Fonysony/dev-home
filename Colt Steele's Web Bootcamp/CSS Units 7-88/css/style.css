@@ -1,0 +1,63 @@
+html {
+    font-size: 30px;
+}
+
+#pecentages {
+    background-color: #6d6875;
+    width: 600px;
+    height: 600px;
+}
+
+#percentages div {
+    background-color: #e5989b;
+    width: 50%;
+    height: 50%;
+}
+
+#ems h1 {
+    font-size: 40px;
+    border: 1px solid black;
+    line-height: 200%; /* Or 80px cause it grabs from the font-size of the element which is 40px. 200% of 40px is the same as 80px */
+}
+
+#ems {
+    font-size: 30px; /* this is the parent element of h2 */
+}
+
+#ems p {
+    font-size: 0.8em;
+}
+
+#ems h2 {
+    font-size: 2em; /* This is grabbing from the parent and times it*/
+}                   /* this h2 should have a font-size of 60px when using 2ems */
+
+#ems h3 {
+    font-size: 2em;
+    margin-left: 1em; /* Refers to the font-size of its element so, 2ems = 6opx, margin = 60px; */
+}
+
+button {
+    font-size: 1em;
+    padding: 0 1em;
+    border-radius: 0.5em;
+    background-color: #2a9d8f;
+    color: white;
+}
+
+#ems ul {
+    font-size: 1.5em; /* With nested uls they can stack, grow or shrink very quickly */
+}
+
+
+#rems h2 {
+    font-size: 3rem; /* this is grabbing from the html font-size and times it with rems */ 
+}
+
+#rems h3 {
+    font-size: 2rem;
+}
+
+#rems ul {
+    font-size: 2rem;
+}

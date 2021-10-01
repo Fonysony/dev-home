@@ -1,0 +1,9 @@
+- All JS values have an inherent truthiness or falsyness about them.
+- Falsy values:
+  - false
+  - 0
+  - "" (Empty string)
+  - null
+  - undefined
+  - NaN
+- Everything else is truthy!

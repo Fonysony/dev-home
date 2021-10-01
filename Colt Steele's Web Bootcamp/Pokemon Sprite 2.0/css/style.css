@@ -1,0 +1,23 @@
+h1 {
+    color: turquoise;
+}
+
+div {
+    width: 100px;
+    height: 100px;
+    margin: 10px;
+}
+
+a {
+    display: inline-block;
+    text-align: center;
+    text-decoration: none;
+}
+
+#container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    width: 100%;
+    height: 100%;
+}
