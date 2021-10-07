@@ -32,6 +32,7 @@ const randomColor = () => {
 // All buttons that are click get a random background color
 const buttons = document.querySelectorAll('button');
 for (let button of buttons) {
+    console.log('Button RAN!')
     button.addEventListener('click', colorize);
 }
 

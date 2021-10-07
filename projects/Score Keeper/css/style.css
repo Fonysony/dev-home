@@ -1,0 +1,106 @@
+
+.container {
+    font-family: monospace;
+    max-width: 500px;
+    display: flex;
+    flex-direction: column;
+    margin: 0 auto;
+}
+
+.container, .container > * {
+    box-shadow: 1px 1px 4px 1px rgba(0, 0, 0, 0.2);
+    border: 1px solid #cfc8c8;
+    box-sizing: border-box;
+}
+
+.container img {
+    height: 250px;
+    flex-grow: 2;
+    object-fit: contain;
+    background: url('../images/logo.jpeg') bottom right no-repeat;
+}
+
+#game-title {
+    line-height: 40px;
+    font-size: 1rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    margin: 0;
+}
+
+#game-title, #playing-to {
+    padding-left: 1rem;
+}
+
+#score-title {
+    font-size: 1.8rem;
+    margin-top: 1rem;
+    margin-bottom: 7px;
+}
+
+.winner {
+    color: rgb(155, 253, 133);
+}
+
+.loser {
+    color: rgb(255, 109, 109);
+}
+
+#score-keeper p {
+    font-size: 14px;
+    font-weight: 500;
+    margin-top: 0;
+}
+
+#playing-to {
+    margin-bottom: 1rem;
+}
+
+#playing-to label {
+    font-size: 1rem;
+    font-weight: 700;
+}
+
+#play-to {
+    width: 3rem;
+    height: 1.7rem;
+    font-size: 1rem;
+    border-radius: 1.2rem;
+    padding: 0 5px;
+}
+
+#btn-container {
+    display: flex;
+    
+}
+
+.btn {
+    height: 47px;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #fff;
+    border: 2px solid rgb(var(--background-color));
+    border-radius: 2px;
+    flex-grow: 1;
+    padding: 1rem 0;
+}
+
+.btn:hover {
+    background-color: rgba(var(--background-color), 1)!important;
+}
+
+#player-one {
+    background-color: rgb(155, 253, 133);
+    --background-color: 138, 224, 118;
+}
+
+#player-two {
+    background-color: rgb(130, 171, 253);
+    --background-color: 118, 155, 231;
+}
+
+#reset {
+    background-color: rgb(255, 109, 109);
+    --background-color: 215, 93, 93;
+}

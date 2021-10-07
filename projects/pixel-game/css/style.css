@@ -1,0 +1,15 @@
+
+.canvas {
+    display: grid;
+    grid-template-columns: repeat(10, 10px);
+    grid-template-rows: repeat(10, 10px);
+    width: 100px;
+    height: 100px;
+}
+
+.pixel {
+    width: 10px;
+    height: 10px;
+    border: 1px solid black;
+    box-sizing: border-box;
+}

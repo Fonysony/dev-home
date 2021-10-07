@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <title>Ping Pong Score Keeper</title>
+        <meta name="description" content="HTML5 Template for new projects">
+        <meta name="author" content="">
+
+        <link rel="stylesheet" href="../css/style.css">
+    </head>
+
+    <body>
+        <main>
+            <div class="container">
+                <img alt="">
+                <p id="game-title">Ping Pong Score Keeper | Playing To:<span id="max-point"></span></p>
+                <div id="score-keeper">
+                    <div id="playing-to">
+                        <h1 id="score-title"><span id="score-one">0</span> to <span id="score-two">0</span></h1>
+                        <p>Use the buttons below to keep score.</p>
+                        <label for="play-to">Playing To</label>
+                        <select name="" id="play-to">
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                            <option value="7">7</option>
+                            <option value="8">8</option>
+                            <option value="9">9</option>
+                            <option value="10">10</option>
+                        </select>
+                    </div>
+                    <div id="btn-container">
+                        <button id="player-one" class="btn player-btn">Player One</button>
+                        <button id="player-two" class="btn player-btn">Player Two</button>
+                        <button id="reset" class="btn">Reset</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+        <script src="../js/app.js" charset="utf-8"></script>
+    </body>
+</html>
