@@ -84,6 +84,7 @@
     border-radius: 2px;
     flex-grow: 1;
     padding: 1rem 0;
+    cursor: pointer;
 }
 
 .btn:hover {
