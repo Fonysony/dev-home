@@ -1,0 +1,1 @@
+This is a template folder for web projects.
