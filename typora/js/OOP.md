@@ -206,3 +206,336 @@ Color.prototype.rgba = function(a=1.0) { // a defaults to 1
 }
 ```
 
+
+
+## JS Classes
+
+Classes are another stntactic sugar of prototypes, the keyword of this, and the new keyword. We don't have to add methods to the prototype manually, we don't have to break up the constructor function and then separately add methods. 
+
+```js
+class Color {
+  constructor() {
+    
+  }
+}
+```
+
+When creating classes or constructor functions you capitalize the first letter to let you know that this object creates other objects. You the keyword class to let JS know that we are creating a class here. The next thing is the constructor, we always add this in when using classes, a constructor is a function that will execute immediately whenever a new color is created. 
+
+```js
+class Color {
+  constructor(r, g, b) {
+    console.log('INSIDE CONSTRUCTOR'):
+    console.log(r, g, b);
+  }
+}
+
+const black = new Color(0, 0, 0);
+
+// Output
+// INSIDE CONSTRUCTOR
+// 0 0 0
+```
+
+the inside constructor and r g b ran immediately. I never said run the constructor, never called the constructor, it automatically runs as long it is named constructor. You need the class keyword and you need the constructor which will run immediately whenever we instantiate a new instance of a class. 
+
+```js
+class Color {
+  constructor(r, g, b, name) {
+    this.r = r;
+    this.g = g;
+    this.b = b;
+    this.name = name;
+  }
+}
+```
+
+You don't have to do the same exact name from the constructor parameters, you can give it it's own name, but this is the property we are adding to the object and typically we use the exact same name.
+
+```js
+class Color {
+  constructor(r, g, b, name) {
+    this.r = r;
+    this.g = g;
+    this.b = b;
+    this.colorName = name; // doesn't have to be the same name
+  }
+}
+```
+
+
+
+```js
+class Color {
+  constructor(r, g, b, name) {
+    this.r = r;
+    this.g = g;
+    this.b = b;
+    this.name = name;
+  }
+}
+
+const reddy = new Color(255, 67, 89, 'tomato');
+```
+
+reddy is an object that has r, g, b, and name properties, I never made an empty object myself, the new keyword takes care of that. The (__proto__) with reddy has a constructor which is set to the Color class. We don't have to do Color.prototype like with constructor function to add our methods into the (__proto__).
+
+```js
+class Color {
+  constructor(r, g, b, name) {
+    this.r = r;
+    this.g = g;
+    this.b = b;
+    this.name = name;
+  }
+  greet() {
+   return `Hello color ${this.name}!!`;	 
+  }
+}
+
+const black = new Color(0, 0, 0, 'black');
+const white = new Color(255, 255, 255, 'white');
+black.greet(); // Hello color black!!
+white.greet(); // Hello color white!!
+```
+
+ You see here that it's just like we did with Color.prototype in the constructor function section, we don't have to type prototype. We just put it inside the class so we can group everything together. greet() will be added to the Color class (__proto__) so that all created Color classes will have greet too. You don't need to use a function or arrow function to create a function with a class.
+
+```js
+class Color {
+  constructor(r, g, b, name) {
+    this.r = r;
+    this.g = g;
+    this.b = b;
+    this.name = name;
+  }
+  greet() {
+   return `Hello color ${this.name}!!`;	 
+  }
+  rgb() {
+    const {r, g, b} = this;
+    return `rgb(${r}, ${g}, ${b})`;
+  }
+  rgba(a=1.0) {
+    return `rgba(${this.rgb()}, ${a})`;
+  }
+  hex() {
+  	const {r, g, b} = this;
+  	return '#' + ((1 << 24) + (r << 16) + (g << 8) + 	b).toString(16).slice(1);
+	}
+}
+```
+
+You can call other methods within to other methods. You can actually call other methods within the constructor so that when you create a brand new class it will run.
+
+```js
+class Car {
+  constructor(name, speed = 20, acc) { // default to 20 for speed
+    this.name = name;
+    this.speed = speed;
+    this.acc = acc;
+    this.speedTest(speed);
+  }
+  speedTest(spd) {
+    const ran = Math.floor(Math.random() * spd) + 1;
+    console.log(spd, ran);
+    let model;
+    if (spd > ran) {
+      model = 2022;
+    } else if (spd < ran) {
+      model = 2010;
+    }
+    this.model = model;
+  }
+}
+```
+
+You can see here that I even called the speedTest() method and passed in an argument of whatever speed is equaled too. Then with the speedTest() I see if spd will be higher than a random number, if it is then make model into 2022, if it is lower than make model into 2010.  I then create a model porperty with the Car class and store model into it and it did all this right when I created a Car class. The color part is that you can make something run and use the values that the person provided in the class. 
+
+## Extends & Super Keywords
+
+## Extends
+
+The extends keyword and super keyword both have to do with subclassing, essentially inheritance. This is a way of sharing functionality between classes. 
+
+```js
+class Cat {
+  constructor(name, age) {
+    this.name = name;
+    this.age = age;
+  }
+  eat() {
+    return `${this.name} is eating!`;
+  }
+  meow() {
+    return 'MEOWW!!!';
+  }
+}
+
+class Dog {
+  constructor(name, age) {
+    this.name = name;
+    this.age = age;
+  }
+  eat() {
+    return `${this.name} is eating!`;
+  }
+  bark() {
+    return 'WOOFF!!';
+  }
+}
+```
+
+You see that we have a lot of duplicated functionality or DRY (Don't Repeat Yourself) code.
+
+We could grab everything that is similar to the Cat & Dog classes and make a separate standalone class that both of these classes or Cat & Dog could extend. 
+
+```js
+class Pet {
+  constructor(name, age) {
+    this.name = name;
+    this.age = age;
+  }
+  eat() {
+    return `${this.name} is eating!`;
+  }
+}
+
+class Cat {
+  meow() {
+    return 'MEOWW!!!';
+  }
+}
+
+class Dog {
+  bark() {
+    return 'WOOFF!!';
+  }
+}
+  
+```
+
+Right now cause Cat and Dog don't have constructors, when creating new Cat & Dog objects, the created objects will be empty. To extend the Pet class to Cat & Dog, it's just simply adding the extends keyword within the class name.
+
+```js
+class Pet {
+  constructor(name, age) {
+    this.name = name;
+    this.age = age;
+  }
+  eat() {
+    return `${this.name} is eating!`;
+  }
+}
+
+class Cat extends Pet {
+  meow() {
+    return 'MEOWW!!!';
+  }
+}
+
+class Dog extends Pet {
+  bark() {
+    return 'WOOFF!!';
+  }
+}
+
+const wyatt = new Dog('Wyatt', 13);
+// Dog {name: "Wyatt", age: 13}
+```
+
+Look at that, name and age is already filled out even though we didnt add a constructor within the Dog class, because we extended the Pet class to Dog, Dog gets all the things that Pet has even the constructor of Pet, but if we do add an constructor with Dog, it will use that over the Pet class constructor. All the methods that Pet has will be added to Cat & Dog like the eat() function. 
+
+```js
+class Pet {
+  constructor(name, age) {
+    this.name = name;
+    this.age = age;
+  }
+  eat() {
+    return `${this.name} is eating!`;
+  }
+}
+
+class Cat extends Pet {
+  meow() {
+    return 'MEOWW!!!';
+  }
+}
+
+class Dog extends Pet {
+  bark() {
+    return 'WOOFF!!';
+  }
+  eat() {
+    return `${this.name} scarfs his food!`;
+  }
+}
+
+const wyatt = new Dog('Wyatt', 13);
+wyatt.eat(); // Wyatt scarfs his food!
+```
+
+If the Dog class doesn't find the function eat() within the Dog class or Dog prototype, it will look up on the pet prototype.
+
+### Super
+
+```js
+class Cat extends Pet {
+  constructor(name, age, livesLeft = 9) {
+    this.name = name;
+    this.age = age;
+    this.livesLeft = livesLeft;
+  }
+  meow() {
+    return 'MEOWW!!!';
+  }
+}
+```
+
+I could manually set this.name = name and this.age = age, but I'm already doing that within the Pet class, all I want to set is this.livesLeft = livesLeft. We instead can use the super keyword, super will references the class we are extending from. 
+
+```js
+class Cat extends Pet {
+  constructor(name, age, livesLeft = 9) {
+    super(name, age);
+    this.livesLeft = livesLeft;
+  }
+  meow() {
+    return 'MEOWW!!!';
+  }
+}
+```
+
+If I call super inside of the constructor of Cat and I pass in name & age, it's going to call the Pet class constructor.
+
+```js
+class Pet {
+  constructor(name, age) {
+    console.log('IN PET CONSTRUCTOR!');
+    this.name = name;
+    this.age = age;
+  }
+  eat() {
+    return `${this.name} is eating!`;
+  }
+}
+
+class Cat extends Pet {
+  constructor(name, age, livesLeft = 9) {
+    console.log('IN CAT CONSTRUCTOR!');
+    super(name, age);
+    this.livesLeft = livesLeft;
+  }
+  meow() {
+    return 'MEOWW!!!';
+  }
+}
+
+const gigger = new Cat('Gigger', 5);
+// IN CAT CONSTRUCTOR
+// IN PET CONSTRUCTOR
+// gigger {name: 'Gigger', age: 5, livesLeft: 9}
+```
+
+We reused the functionality of the Pet class constructor, but we added on our own constructor for cat. Super is going to be a reference to the super class or the object that we are extending to.
