@@ -26,7 +26,7 @@ var is function scoped when it is declared within a function, meaning it is avai
         var greeter = "say Hello instead"; 
     }
     
-    console.log(greeter) // "say Hello instead"
+    console.log(greeter); // "say Hello instead"
 ```
 
 In this example greeter is a global variable, but because var can resign the value of the variable greeter, it will resign instead of creating a new variable. this can make you mistakenly overwrite a variable without even knowing it.
@@ -35,7 +35,7 @@ let cannot be re-declared and it will output an error if you do so // error: Ide
 
 let is block scoped
 
-A block is a chink of code bounded by {}. Anything within curly braces is a block.
+A block is a chunk of code bounded by {}. Anything within curly braces is a block.
 
 Variables declared in a block with let is only available within that block.
 

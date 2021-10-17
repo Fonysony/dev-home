@@ -1,6 +1,6 @@
 What is Flexbox?
 
-Flexbox is a one-dimensional layout method for laying ot items in rows or columns.
+Flexbox is a one-dimensional layout method for laying out items in rows or columns.
 
 Why Flex?
 

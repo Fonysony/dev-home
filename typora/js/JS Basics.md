@@ -22,7 +22,7 @@ Undefined Example:
 
 - '"hello"[99]' // Undefined
 
-  Its basically JS way of saying I don't know the value you are trying to grab, it is undefined.
+  Its basically JS way of saying I don't know the value you are trying to grab, it is undefined or the value in this variable or object is empty.
 
 - Console has RELP, Read Evaluate Loop and Print.
 

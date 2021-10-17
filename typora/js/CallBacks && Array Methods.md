@@ -20,7 +20,7 @@ function print(element) {
 numbers.forEach(print);
 ```
 
-This isn't really common to do forEach and just pass in a function you already defined. What we mostly commonly see is defining an anonymous function expression inside of the forEach argument.
+This isn't really common to do forEach() and just pass in a function you already defined. What we mostly commonly see is defining an anonymous function expression inside of the forEach argument.
 
 ```js
 numbers.forEach(function(el) {
