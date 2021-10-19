@@ -508,3 +508,4 @@ No colors are showing sadly.....
 The `package.json` file contains metaData, information about the project you are working on. Most importantly, it contains a list of dependencies which is nice for the other people who are using our projects. When sharing the project, you normally won't share the `node_modules` directory because it contains tons and tons of dependencies, depending on what you have, that could take up a lot of space. 
 
 Lets say you have a project and you want to use, you take a look at their dependencies and there is a lot of them. You could go and manully `npm install`, but instead, if you're inside of a project directory with a `package.json` that has it's dependencies listed, if you run the command `npm install`  it's going to look at the `package.json` and install all the dependencies!!!
+
