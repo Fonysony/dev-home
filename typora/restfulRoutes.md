@@ -830,3 +830,24 @@ This .patch helps with the editing to save the edit. Remember that you don't wan
 
 
 
+### Destroy /comments/:id DELETE -- Deletes specific item on server 
+
+Last thing to do is to setup an endpoint to destroy a comment. We need to use `method-override` to override the `post` request on HTML forms because HTML forms can't have a `delete` request. 
+
+```ejs
+// show.ejs
+<form method="post" action="/comments/<%= tweet.id %>?_method=DELETE">
+		<button>Delete Comment</button>
+</form>
+```
+
+```js
+// index.js
+app.delete('/comments/:id', (req, res) => {
+    const { id } = req.params;
+    tweets = tweets.filter(c => c.id !== id);
+    res.redirect('/comments');
+});
+```
+
+If we delete a comment, we want to redirect somewhere. Basically anything that's not a `get` route you're going to want to redirect from. 
