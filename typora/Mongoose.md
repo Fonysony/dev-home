@@ -141,7 +141,7 @@ If you want to add additional keys later, use the [Schema#add](https://mongoosej
 
 This is the object or the blueprint we want to make for our Schema. Lets see how we do that with a Schema.
 
-The permitted SchemaTypes are:
+## The permitted SchemaTypes are:
 
 - [String](https://mongoosejs.com/docs/schematypes.html#strings)
 - [Number](https://mongoosejs.com/docs/schematypes.html#numbers)
@@ -180,6 +180,8 @@ async function main() {
 
 We have defined a Schema which has nothing to do with the database, it's just a cocept on the JavaScript side. We now take this Schema and tell Mongoose we want to create a model.
 
+
+
 # Models
 
 Models are just JavaScript classes that we make with the assistance of Mongoose that represent information in a Mongo database collection. 
@@ -209,6 +211,10 @@ A model is a class with which we construct documents. In this case, each documen
 const silence = new Kitten({ name: 'Silence' });
 console.log(silence.name); // 'Silence'
 ```
+
+
+
+## Instance Methods
 
 Kittens can meow, so let's take a look at how to add "speak" functionality to our documents:
 
@@ -240,7 +246,145 @@ fluffy.speak();
 
 
 
+```js
+const mongoose = require('mongoose');
 
+main();
+
+const productSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: true,
+  },
+  price: {
+    type: Number,
+    default: 0,
+    min: 0,
+  },
+  isOnSale: {
+    type: Boolean,
+    default: false,
+  },
+});
+
+productSchema.methods.toggleOnSale = function() {
+  this.isOnSale = !this.isOnSale;
+  return this.save();
+}
+
+const Product = mongoose.model('Product', productSchema);
+
+const findProduct = async () => {
+  const foundProduct = await Product.findOne({name: 'Tire Pump'});
+  console.log(foundProduct);
+  await foundProduct.toggleOnSale();
+}
+
+findProduct();
+
+async function main() {
+  await mongoose.connect('mongodb://127.0.0.1:27017/shopApp');
+}
+```
+
+```shell
+% node product.js
+{
+  _id: new ObjectId("618a53dc6b6bd3a385e893f7"),
+  name: 'Tire Pump',
+  price: 20,
+  isOnSale: false,
+  categories: [ 'Bike' ],
+  __v: 0
+}
+
+% node product.js
+{
+  _id: new ObjectId("618a53dc6b6bd3a385e893f7"),
+  name: 'Tire Pump',
+  price: 20,
+  isOnSale: true,
+  categories: [ 'Bike' ],
+  __v: 0
+}
+```
+
+We are taking our `productSchema` and adding a method called `toggleOnSale()` that will grab the  `productSchema`'s  `isOnSale` `Boolean` and toggle it. We then save the changes on the `productSchema` to take to effect. We are returning the `.save()` because it may take awhile inorder for the changes to save so, it's good to wait for that to finish.
+
+`findProduct` will then try to find a product within the `Product` class and wait for the results to come back with `await`, because it could take awhile. After it finds a match or not, it will `console.log` the product and `await` the `toggleOnSale()` method, which returns a query that can be `.then()` or `await`.
+
+The keyword `this` refers to each and every instance of the `Product` model.
+
+
+
+## Static Methods
+
+You can also add static functions to your model. There are two equivalent ways to add a static:
+
+- Add a function property to `schema.statics`
+- Call the [`Schema#static()` function](https://mongoosejs.com/docs/api.html#schema_Schema-static)
+
+```javascript
+// Assign a function to the "statics" object of our animalSchema
+  animalSchema.statics.findByName = function(name) {
+    return this.find({ name: new RegExp(name, 'i') });
+  };
+  // Or, equivalently, you can call `animalSchema.static()`.
+  animalSchema.static('findByBreed', function(breed) { return this.find({ breed }); });
+
+  const Animal = mongoose.model('Animal', animalSchema);
+  let animals = await Animal.findByName('fido');
+  animals = animals.concat(await Animal.findByBreed('Poodle'));
+```
+
+Do **not** declare statics using ES6 arrow functions (`=>`). Arrow functions [explicitly prevent binding `this`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/Arrow_functions#No_binding_of_this), so the above examples will not work because of the value of `this`.
+
+```js
+const mongoose = require('mongoose');
+
+main();
+
+const productSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: true,
+  },
+  price: {
+    type: Number,
+    default: 0,
+    min: 0,
+  },
+  isOnSale: {
+    type: Boolean,
+    default: false,
+  },
+});
+
+productSchema.statics.fireSale = function() {
+  return this.updateMany({}, {onSale: true, price: 0});
+}
+
+const Product = mongoose.model('Product', productSchema);
+
+Product.fireSale().then(res =>console.log(res));
+
+async function main() {
+  await mongoose.connect('mongodb://127.0.0.1:27017/shopApp');
+}
+```
+
+```shell
+% node product.js
+{
+  acknowledged: true,
+  modifiedCount: 1,
+  upsertedId: null,
+  upsertedCount: 0,
+  matchedCount: 1
+}
+```
+
+The `this` keyword refers to the `Product` model. 
 
 ## EXAMPLE!!!!
 
@@ -439,10 +583,6 @@ async function main() {
 
 This will take some time so, `.insertMany()` returns a promise. We do not need to use the `.save()` method inorder to save our movies into MongoDB.
 
-
-
-
-
 # Queries
 
 A mongoose query can be executed in one of two ways. First, if you pass in a `callback` function, Mongoose will execute the query asynchronously and pass the results to the `callback`.
@@ -603,6 +743,49 @@ movieSync();
 async function movieSync() {
     console.log(await Movie.find({}).exec());
 }
+
+[
+  {
+    _id: new ObjectId("6186e8a4b981bdf7b822f6fc"),
+    title: 'Amelie',
+    year: 2001,
+    score: 8.3,
+    rating: 'R',
+    __v: 0
+  },
+  {
+    _id: new ObjectId("6186e8a4b981bdf7b822f6fd"),
+    title: 'Alien',
+    year: 1979,
+    score: 8.1,
+    rating: 'R',
+    __v: 0
+  },
+  {
+    _id: new ObjectId("6186e8a4b981bdf7b822f6fe"),
+    title: 'The Iron Giant',
+    year: 1999,
+    score: 7.5,
+    rating: 'PG',
+    __v: 0
+  },
+  {
+    _id: new ObjectId("6186e8a4b981bdf7b822f6ff"),
+    title: 'Stand By Me',
+    year: 1986,
+    score: 8.6,
+    rating: 'R',
+    __v: 0
+  },
+  {
+    _id: new ObjectId("6186e8a4b981bdf7b822f700"),
+    title: 'Moonrise Kingdom',
+    year: 2012,
+    score: 7.3,
+    rating: 'PG-13',
+    __v: 0
+  }
+]
 ```
 
 
@@ -687,5 +870,944 @@ User.findById(id).exec();
 
 // Using callback
 User.findById(id, function(err, user) {});
+```
+
+
+### Example:
+
+```js
+const Movie = mongoose.model('Movie', movieSchema);
+
+Movie.insertMany([
+  {title: 'Amelie', year: 2001, score: 8.3, rating: 'R'},
+  {title: 'Alien', year: 1979, score: 8.1, rating: 'R'},
+  {title: 'The Iron Giant', year: 1999, score: 7.5, rating: 'PG'},
+  {title: 'Stand By Me', year: 1986, score: 8.6, rating: 'R'},
+  {title: 'Moonrise Kingdom', year: 2012, score: 7.3, rating: 'PG-13'},
+]);
+```
+
+```js
+movieSync();
+
+async function movieSync() {
+	console.log(await Movie.find({_id: '6186e8a4b981bdf7b822f6fe'}).exec());
+}
+
+[
+  {
+    _id: new ObjectId("6186e8a4b981bdf7b822f6fe"),
+    title: 'The Iron Giant',
+    year: 1999,
+    score: 7.5,
+    rating: 'PG',
+    __v: 0
+  }
+]
+```
+
+This is one way of finding the `_id` which returns an array, but another option is `findById()`which you don't have to pass in an object. 
+
+```js
+movieSync();
+
+async function movieSync() {
+	console.log(await Movie.findById('6186e8a4b981bdf7b822f6fe').exec());
+}
+
+{
+  _id: new ObjectId("6186e8a4b981bdf7b822f6fe"),
+  title: 'The Iron Giant',
+  year: 1999,
+  score: 7.5,
+  rating: 'PG',
+  __v: 0
+}
+```
+
+
+
+## Model.updateOne(filter, update, [options])
+
+### Returns:
+
+- «Query»
+
+Same as `update()`, except it does not support the `multi` or `overwrite` options.
+
+- MongoDB will update *only* the first document that matches `filter` regardless of the value of the `multi` option.
+- Use `replaceOne()` if you want to overwrite an entire document rather than using atomic operators like `$set`
+
+```js
+const res = await Person.updateOne({ name: 'Jean-Luc Picard' }, { ship: 'USS Enterprise' });
+res.matchedCount; // Number of documents matched
+res.modifiedCount; // Number of documents modified
+res.acknowledged; // Boolean indicating everything went smoothly.
+res.upsertedId; // null or an id containing a document that had to be upserted.
+res.upsertedCount; // Number indicating how many documents had to be upserted. Will either be 0 or 1.
+```
+
+
+
+### Example:
+
+```js
+const Movie = mongoose.model('Movie', movieSchema);
+
+Movie.insertMany([
+  {title: 'Amelie', year: 2001, score: 8.3, rating: 'R'},
+  {title: 'Alien', year: 1979, score: 8.1, rating: 'R'},
+  {title: 'The Iron Giant', year: 1999, score: 7.5, rating: 'PG'},
+  {title: 'Stand By Me', year: 1986, score: 8.6, rating: 'R'},
+  {title: 'Moonrise Kingdom', year: 2012, score: 7.3, rating: 'PG-13'},
+]);
+```
+
+```js
+movieSync();
+
+async function movieSync() {
+	console.log(await Movie.updateOne({title: 'Alien'}, {score: 9}).exec());
+  console.log(await Movie.find({title: 'Alien'}));
+}
+
+{
+  acknowledged: true,
+  modifiedCount: 0,
+  upsertedId: null,
+  upsertedCount: 0,
+  matchedCount: 1
+}
+[
+  {
+    _id: new ObjectId("6186e8a4b981bdf7b822f6fd"),
+    title: 'Alien',
+    year: 1979,
+    score: 9,
+    rating: 'R',
+    __v: 0
+  }
+]
+```
+
+
+
+## Model.updateMany(filter, update, [options])
+
+### Returns:
+
+- «Query»
+
+Same as `update()`, except MongoDB will update *all* documents that match `filter` (as opposed to just the first one) regardless of the value of the `multi` option.
+
+**Note** updateMany will *not* fire update middleware. Use `pre('updateMany')` and `post('updateMany')` instead.
+
+#### Example:
+
+```js
+const res = await Person.updateMany({ name: /Stark$/ }, { isDeleted: true });
+res.matchedCount; // Number of documents matched
+res.modifiedCount; // Number of documents modified
+res.acknowledged; // Boolean indicating everything went smoothly.
+res.upsertedId; // null or an id containing a document that had to be upserted.
+res.upsertedCount; // Number indicating how many documents had to be upserted. Will either be 0 or 1.
+```
+
+This function triggers the following middleware.
+
+- `updateMany()`
+
+## Example:
+
+```js
+const Movie = mongoose.model('Movie', movieSchema);
+
+Movie.insertMany([
+  {title: 'Amelie', year: 2001, score: 8.3, rating: 'R'},
+  {title: 'Alien', year: 1979, score: 8.1, rating: 'R'},
+  {title: 'The Iron Giant', year: 1999, score: 7.5, rating: 'PG'},
+  {title: 'Stand By Me', year: 1986, score: 8.6, rating: 'R'},
+  {title: 'Moonrise Kingdom', year: 2012, score: 7.3, rating: 'PG-13'},
+]);
+```
+
+```js
+movieSync();
+
+async function movieSync() {
+	console.log(await Movie.updateMany({title: {$in: ['Alien', 'The Iron Giant']}}, {score: 10}).exec());
+  console.log(await Movie.find({title: {$in: ['Alien', 'The Iron Giant']}}));
+}
+
+{
+  acknowledged: true,
+  modifiedCount: 0,
+  upsertedId: null,
+  upsertedCount: 0,
+  matchedCount: 2
+}
+[
+  {
+    _id: new ObjectId("6186e8a4b981bdf7b822f6fd"),
+    title: 'Alien',
+    year: 1979,
+    score: 10,
+    rating: 'R',
+    __v: 0
+  },
+  {
+    _id: new ObjectId("6186e8a4b981bdf7b822f6fe"),
+    title: 'The Iron Giant',
+    year: 1999,
+    score: 10,
+    rating: 'PG',
+    __v: 0
+  }
+]
+```
+
+
+
+## Model.findOneAndUpdate(conditions, update, [options])
+
+### Returns:
+
+- «Query»
+
+Issues a mongodb findAndModify update command.
+
+Finds a matching document, updates it according to the `update` arg, passing any `options`, and returns the found document (if any) to the callback. The query executes if `callback` is passed else a Query object is returned.
+
+### Options:
+
+- `new`: bool - if true, return the modified document rather than the original. defaults to false (changed in 4.0)
+- `upsert`: bool - creates the object if it doesn't exist. defaults to false.
+- `overwrite`: bool - if true, replace the entire document.
+- `fields`: {Object|String} - Field selection. Equivalent to `.select(fields).findOneAndUpdate()`
+- `maxTimeMS`: puts a time limit on the query - requires mongodb >= 2.6.0
+- `sort`: if multiple docs are found by the conditions, sets the sort order to choose which doc to update
+- `runValidators`: if true, runs [update validators](https://mongoosejs.com/docs/validation.html#update-validators) on this command. Update validators validate the update operation against the model's schema.
+- `setDefaultsOnInsert`: `true` by default. If `setDefaultsOnInsert` and `upsert` are true, mongoose will apply the [defaults](http://mongoosejs.com/docs/defaults.html) specified in the model's schema if a new document is created.
+- `rawResult`: if true, returns the [raw result from the MongoDB driver](http://mongodb.github.io/node-mongodb-native/2.0/api/Collection.html#findAndModify)
+- `strict`: overwrites the schema's [strict mode option](http://mongoosejs.com/docs/guide.html#strict) for this update
+
+#### Examples:
+
+```js
+A.findOneAndUpdate(conditions, update, options, callback) // executes
+A.findOneAndUpdate(conditions, update, options)  // returns Query
+A.findOneAndUpdate(conditions, update, callback) // executes
+A.findOneAndUpdate(conditions, update)           // returns Query
+A.findOneAndUpdate()                             // returns Query
+```
+
+
+
+### Examples:
+
+```js
+const Movie = mongoose.model('Movie', movieSchema);
+
+Movie.insertMany([
+  {title: 'Amelie', year: 2001, score: 8.3, rating: 'R'},
+  {title: 'Alien', year: 1979, score: 8.1, rating: 'R'},
+  {title: 'The Iron Giant', year: 1999, score: 7.5, rating: 'PG'},
+  {title: 'Stand By Me', year: 1986, score: 8.6, rating: 'R'},
+  {title: 'Moonrise Kingdom', year: 2012, score: 7.3, rating: 'PG-13'},
+]);
+```
+
+```js
+movieSync();
+
+async function movieSync() {
+  console.log(await Movie.findOneAndUpdate({title: 'The Iron Giant'}, {score: 7.0}).exec());
+}
+
+{
+  _id: new ObjectId("6186e8a4b981bdf7b822f6fe"),
+  title: 'The Iron Giant',
+  year: 1999,
+  score: 10,
+  rating: 'PG',
+  __v: 0
+}
+```
+
+I said update `score` to `7.1` not 10, why is it 10? It's giving the old version of the modified document. If you want the new moodified document then you must use the `new` option and set it to `true`.
+
+```js
+movieSync();
+
+async function movieSync() {
+  console.log(await Movie.findOneAndUpdate({title: 'The Iron Giant'}, {score: 2.0}, {new: true}).exec());
+}
+
+{
+  _id: new ObjectId("6186e8a4b981bdf7b822f6fe"),
+  title: 'The Iron Giant',
+  year: 1999,
+  score: 2,
+  rating: 'PG',
+  __v: 0
+}
+```
+
+
+
+## Model.findOneAndDelete(conditions, [options])
+
+### Returns:
+
+- «Query»
+
+Issue a MongoDB `findOneAndDelete()` command.
+
+Finds a matching document, removes it, and passes the found document (if any) to the callback.
+
+Executes the query if `callback` is passed.
+
+This function triggers the following middleware.
+
+- `findOneAndDelete()`
+
+This function differs slightly from `Model.findOneAndRemove()` in that `findOneAndRemove()` becomes a [MongoDB `findAndModify()` command](https://docs.mongodb.com/manual/reference/method/db.collection.findAndModify/), as opposed to a `findOneAndDelete()` command. For most mongoose use cases, this distinction is purely pedantic. You should use `findOneAndDelete()` unless you have a good reason not to.
+
+#### Options:
+
+- `sort`: if multiple docs are found by the conditions, sets the sort order to choose which doc to update
+- `maxTimeMS`: puts a time limit on the query - requires mongodb >= 2.6.0
+- `select`: sets the document fields to return, ex. `{ projection: { _id: 0 } }`
+- `projection`: equivalent to `select`
+- `rawResult`: if true, returns the [raw result from the MongoDB driver](http://mongodb.github.io/node-mongodb-native/2.0/api/Collection.html#findAndModify)
+- `strict`: overwrites the schema's [strict mode option](http://mongoosejs.com/docs/guide.html#strict) for this update
+
+#### Examples:
+
+```js
+A.findOneAndDelete(conditions, options, callback) // executes
+A.findOneAndDelete(conditions, options)  // return Query
+A.findOneAndDelete(conditions, callback) // executes
+A.findOneAndDelete(conditions) // returns Query
+A.findOneAndDelete()           // returns Query
+```
+
+
+
+### Example:
+
+```js
+const Movie = mongoose.model('Movie', movieSchema);
+
+Movie.insertMany([
+  {title: 'Amelie', year: 2001, score: 8.3, rating: 'R'},
+  {title: 'Alien', year: 1979, score: 8.1, rating: 'R'},
+  {title: 'The Iron Giant', year: 1999, score: 7.5, rating: 'PG'},
+  {title: 'Stand By Me', year: 1986, score: 8.6, rating: 'R'},
+  {title: 'Moonrise Kingdom', year: 2012, score: 7.3, rating: 'PG-13'},
+]);
+```
+
+```js
+movieSync();
+
+async function movieSync() {
+  console.log(await Movie.findOneAndDelete({title: 'Alien'}).exec());
+}
+
+{
+  _id: new ObjectId("6186e8a4b981bdf7b822f6fd"),
+  title: 'Alien',
+  year: 1979,
+  score: 10,
+  rating: 'R',
+  __v: 0
+}
+```
+
+
+
+## Model.deleteMany(conditions, [options])
+
+### Returns:
+
+- «Query»
+
+Deletes all of the documents that match `conditions` from the collection. It returns an object with the property `deletedCount` containing the number of documents deleted. Behaves like `remove()`, but deletes all documents that match `conditions` regardless of the `single` option.
+
+#### Example:
+
+```js
+await Character.deleteMany({ name: /Stark/, age: { $gte: 18 } }); // returns {deletedCount: x} where x is the number of documents deleted.
+```
+
+
+
+### Example:
+
+```js
+const Movie = mongoose.model('Movie', movieSchema);
+
+Movie.insertMany([
+  {title: 'Amelie', year: 2001, score: 8.3, rating: 'R'},
+  {title: 'Alien', year: 1979, score: 8.1, rating: 'R'},
+  {title: 'The Iron Giant', year: 1999, score: 7.5, rating: 'PG'},
+  {title: 'Stand By Me', year: 1986, score: 8.6, rating: 'R'},
+  {title: 'Moonrise Kingdom', year: 2012, score: 7.3, rating: 'PG-13'},
+]);
+```
+
+```js
+movieSync();
+
+async function movieSync() {
+  console.log(await Movie.deleteMany({year: {$gte: 1999}}).exec());
+}
+
+{ deletedCount: 3 }
+
+{ "_id" : ObjectId("618961449082c20b3995fe84"), "title" : "Alien", "year" : 1979, "score" : 8.1, "rating" : "R", "__v" : 0 }
+{ "_id" : ObjectId("618961449082c20b3995fe86"), "title" : "Stand By Me", "year" : 1986, "score" : 8.6, "rating" : "R", "__v" : 0 }
+```
+
+
+
+
+
+# Mongoose Schema Validations
+
+```js
+const mongoose = require('mongoose');
+
+main();
+
+const Product = mongoose.model('Product', {
+    name: String,
+    price: Number,
+    isOnSale: Boolean
+});
+
+async function main() {
+    await mongoose.connect('mongodb://127.0.0.1:27017/shopApp');
+}
+```
+
+This is the shorthand way of making `name` to be a `String` SchemaType and `price` to be a `Number`. If you use an object you can use the built-in validations that come with Mongoose. 
+
+By default the shorthand SchemaTypes are set to the `type` property. 
+
+```js
+const mongoose = require('mongoose');
+
+main();
+
+const Product = mongoose.model('Product', {
+    name: {
+      type: String,
+      required: true,
+    },
+    price: {
+      type: Number,
+    },
+    isOnSale: Boolean,
+});
+
+async function main() {
+    await mongoose.connect('mongodb://127.0.0.1:27017/shopApp');
+}
+```
+
+
+
+## [SchemaType Options](https://mongoosejs.com/docs/schematypes.html#schematype-options)
+
+- `required`: boolean or function, if true adds a [required validator](https://mongoosejs.com/docs/validation.html#built-in-validators) for this property
+- `default`: Any or function, sets a default value for the path. If the value is a function, the return value of the function is used as the default.
+- `select`: boolean, specifies default [projections](https://docs.mongodb.com/manual/tutorial/project-fields-from-query-results/) for queries
+- `validate`: function, adds a [validator function](https://mongoosejs.com/docs/validation.html#built-in-validators) for this property
+- `get`: function, defines a custom getter for this property using [`Object.defineProperty()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperty).
+- `set`: function, defines a custom setter for this property using [`Object.defineProperty()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperty).
+- `alias`: string, mongoose >= 4.10.0 only. Defines a [virtual](https://mongoosejs.com/docs/guide.html#virtuals) with the given name that gets/sets this path.
+- `immutable`: boolean, defines path as immutable. Mongoose prevents you from changing immutable paths unless the parent document has `isNew: true`.
+- `transform`: function, Mongoose calls this function when you call [`Document#toJSON()`](https://mongoosejs.com/docs/api/document.html#document_Document-toJSON) function, including when you [`JSON.stringify()`](https://thecodebarbarian.com/the-80-20-guide-to-json-stringify-in-javascript) a document.
+
+## Indexes
+
+You can also define [MongoDB indexes](https://docs.mongodb.com/manual/indexes/) using schema type options.
+
+- `index`: boolean, whether to define an [index](https://docs.mongodb.com/manual/indexes/) on this property.
+- `unique`: boolean, whether to define a [unique index](https://docs.mongodb.com/manual/core/index-unique/) on this property.
+- `sparse`: boolean, whether to define a [sparse index](https://docs.mongodb.com/manual/core/index-sparse/) on this property.
+
+## String
+
+- `lowercase`: boolean, whether to always call `.toLowerCase()` on the value
+- `uppercase`: boolean, whether to always call `.toUpperCase()` on the value
+- `trim`: boolean, whether to always call [`.trim()`](https://masteringjs.io/tutorials/fundamentals/trim-string) on the value
+- `match`: RegExp, creates a [validator](https://mongoosejs.com/docs/validation.html) that checks if the value matches the given regular expression
+- `enum`: Array, creates a [validator](https://mongoosejs.com/docs/validation.html) that checks if the value is in the given array.
+- `minLength`: Number, creates a [validator](https://mongoosejs.com/docs/validation.html) that checks if the value length is not less than the given number
+- `maxLength`: Number, creates a [validator](https://mongoosejs.com/docs/validation.html) that checks if the value length is not greater than the given number
+- `populate`: Object, sets default [populate options](https://mongoosejs.com/docs/populate.html#query-conditions)
+
+## Number
+
+- `min`: Number, creates a [validator](https://mongoosejs.com/docs/validation.html) that checks if the value is greater than or equal to the given minimum.
+- `max`: Number, creates a [validator](https://mongoosejs.com/docs/validation.html) that checks if the value is less than or equal to the given maximum.
+- `enum`: Array, creates a [validator](https://mongoosejs.com/docs/validation.html) that checks if the value is strictly equal to one of the values in the given array.
+- `populate`: Object, sets default [populate options](https://mongoosejs.com/docs/populate.html#query-conditions)
+
+## Type
+
+`type` is a special property in Mongoose schemas. When Mongoose finds a nested property named `type` in your schema, Mongoose assumes that it needs to define a SchemaType with the given type.
+
+Naively, you might define your schema as shown below:
+
+```javascript
+const holdingSchema = new Schema({
+  // You might expect `asset` to be an object that has 2 properties,
+  // but unfortunately `type` is special in Mongoose so mongoose
+  // interprets this schema to mean that `asset` is a string
+  asset: {
+    type: String,
+    ticker: String,
+  }
+});
+```
+
+However, when Mongoose sees `type: String`, it assumes that you mean `asset` should be a string, not an object with a property `type`. The correct way to define an object with a property `type` is shown below.
+
+```javascript
+const holdingSchema = new Schema({
+  asset: {
+    // Workaround to make sure Mongoose knows `asset` is an object
+    // and `asset.type` is a string, rather than thinking `asset`
+    // is a string.
+    type: { type: String },
+    ticker: String,
+  }
+});
+```
+
+
+
+#### Example:
+
+```js
+const mongoose = require('mongoose');
+
+main();
+
+const Product = mongoose.model('Product', {
+    name: {
+        type: String,
+        required: true,
+    },
+    price: {
+        type: Number,
+    },
+    isOnSale: Boolean,
+});
+
+const bike = new Product({ price: 599 });
+bike.save()
+    .then(data => {
+        console.log('IT WORKED!');
+        console.log(data);
+    })
+    .catch(err => {
+        console.log(`Error: ${err.errors.name.properties.message}`);
+    })
+
+async function main() {
+    await mongoose.connect('mongodb://127.0.0.1:27017/shopApp');
+}
+```
+
+```shell
+% node product.js
+Error: Path `name` is required.
+```
+
+You can see that because of the `required` SchemaType option being set to `true` it's required to fill in name.
+
+```js
+const mongoose = require('mongoose');
+
+main();
+
+const Product = mongoose.model('Product', {
+    name: {
+        type: String,
+        required: true,
+    },
+    price: {
+        type: Number,
+    },
+    isOnSale: Boolean,
+});
+
+const bike = new Product({ name: 'Fast', price: 'NO!' });
+bike.save()
+    .then(data => {
+        console.log('IT WORKED!');
+        console.log(data);
+    })
+    .catch(err => {
+        console.log(`Error: ${err.errors.name.properties.message}`);
+    })
+
+async function main() {
+    await mongoose.connect('mongodb://127.0.0.1:27017/shopApp');
+}
+```
+
+```js
+% node product.js
+TypeError: Cannot read properties of undefined (reading 'properties')
+```
+
+So, it was unable to convert `price` to a number, but it tried. If we use number within strings it can be coverted into a number.
+
+```js
+const mongoose = require('mongoose');
+
+main();
+
+const Product = mongoose.model('Product', {
+    name: {
+        type: String,
+        required: true,
+    },
+    price: {
+        type: Number,
+    },
+    isOnSale: Boolean,
+});
+
+const bike = new Product({name: 'Fast', price: '117'});
+bike.save()
+    .then(data => {
+        console.log('IT WORKED!');
+        console.log(data);
+    })
+    .catch(err => {
+        console.log(`Error: ${err}`);
+    })
+
+async function main() {
+    await mongoose.connect('mongodb://127.0.0.1:27017/shopApp');
+}
+```
+
+```shell
+% node product.js
+IT WORKED!
+{
+  name: 'Fast',
+  price: 117,
+  _id: new ObjectId("6189d360cde8e179fddfeedf"),
+  __v: 0
+}
+```
+
+Now you can see that it coverted `price` to a number even though we provided a string with numbers it it. What would have if we added another property that wasn't in the Schema?
+
+```js
+const mongoose = require('mongoose');
+
+main();
+
+const Product = mongoose.model('Product', {
+    name: {
+        type: String,
+        required: true,
+    },
+    price: {
+        type: Number,
+    },
+    isOnSale: Boolean,
+});
+
+const bike = new Product({name: 'Fast', price: '117', color: 'red'});
+bike.save()
+    .then(data => {
+        console.log('IT WORKED!');
+        console.log(data);
+    })
+    .catch(err => {
+        console.log(`Error: ${err}`);
+    })
+
+async function main() {
+    await mongoose.connect('mongodb://127.0.0.1:27017/shopApp');
+}
+```
+
+```shell
+% node product.js
+IT WORKED!
+{
+  name: 'Fast',
+  price: 117,
+  _id: new ObjectId("6189d4339764a557013b68be"),
+  __v: 0
+}
+```
+
+You can here that is ignored the `color` property that wasn't in the Schema. Also, `isOnSale` isn't included and doesn't have to be incuded because the `required` SchemaType option is set to `false` by default. 
+
+## Default
+
+`default`: Any or function, sets a default value for the path. If the value is a function, the return value of the function is used as the default.
+
+```js
+const mongoose = require('mongoose');
+
+main();
+
+const Product = mongoose.model('Product', {
+    name: {
+        type: String,
+        required: true,
+    },
+    price: {
+      type: Number,
+      default: 0,
+    },
+    isOnSale: {
+      type: Boolean,
+      default: false,
+    },
+  	categories: {
+      type: [String],
+      default: ['Bike'],
+    },
+});
+
+const bike = new Product({name: 'Fast'});
+bike.save()
+    .then(data => {
+        console.log('IT WORKED!');
+        console.log(data);
+    })
+    .catch(err => {
+        console.log(`Error: ${err}`);
+    })
+
+async function main() {
+    await mongoose.connect('mongodb://127.0.0.1:27017/shopApp');
+}
+```
+
+```shell
+% node product.js
+IT WORKED!
+{
+  name: 'Fast',
+  price: 0,
+  isOnSale: false,
+  categories: ['Bike'],
+  _id: new ObjectId("618a4c5494b60c46bedbe714"),
+  __v: 0
+}
+```
+
+
+
+## Number.min
+
+`min`: Number, creates a [validator](https://mongoosejs.com/docs/validation.html) that checks if the value is greater than or equal to the given minimum.
+
+```js
+const mongoose = require('mongoose');
+
+main();
+
+const Product = mongoose.model('Product', {
+    name: {
+        type: String,
+        required: true,
+    },
+    price: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
+    isOnSale: {
+      type: Boolean,
+      default: false,
+    },
+  	categories: {
+      type: [String],
+      default: ['Bike'],
+    },
+});
+
+const bike = new Product({name: 'Fast', price: -19});
+bike.save()
+    .then(data => {
+        console.log('IT WORKED!');
+        console.log(data);
+    })
+    .catch(err => {
+        console.log(`Error: ${err}`);
+    })
+
+async function main() {
+    await mongoose.connect('mongodb://127.0.0.1:27017/shopApp');
+}
+```
+
+```shell
+% node product.js
+Error: ValidationError: price: Path `price` (-19) is less than minimum allowed value (0).
+```
+
+You can see here that it won't allow me to set `price` to -19 cause the `min` is set to 0.
+
+
+
+### Validating Mongoose Updates
+
+The way Mongoose is set up when you update, a document won't apply validations that are used by default when creating a document with validations. To be able to use the validations of the Schema use the `runValidators` options in `findOneAndUpdate()` and set it to `true`.
+
+```js
+const mongoose = require('mongoose');
+
+main();
+
+const Product = mongoose.model('Product', {
+    name: {
+        type: String,
+        required: true,
+    },
+    price: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
+    isOnSale: {
+      type: Boolean,
+      default: false,
+    },
+  	categories: {
+      type: [String],
+      default: ['Bike'],
+    },
+});
+
+const bike = new Product({name: 'Tire Pump', price: 19.50});
+bike.save()
+    .then(data => {
+        console.log('IT WORKED!');
+        console.log(data);
+    })
+    .catch(err => {
+        console.log(`Error: ${err}`);
+    })
+
+async function main() {
+    await mongoose.connect('mongodb://127.0.0.1:27017/shopApp');
+}
+```
+
+Make sure you create a Tire Pump product inorder to test this.
+
+
+
+```js
+const mongoose = require('mongoose');
+
+main();
+
+const Product = mongoose.model('Product', {
+    name: {
+        type: String,
+        required: true,
+    },
+    price: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
+    isOnSale: {
+      type: Boolean,
+      default: false,
+    },
+  	categories: {
+      type: [String],
+      default: ['Bike'],
+    },
+});
+
+Product.findOneAndUpdate({name: 'Tire Pump'}, {price: -20}, {new: true})
+    .then(data => {
+        console.log(data);
+    })
+    .catch(err => {
+        console.log(err);
+    })
+
+async function main() {
+    await mongoose.connect('mongodb://127.0.0.1:27017/shopApp');
+}
+```
+
+```shell
+% node product.js
+{
+  _id: new ObjectId("618a53dc6b6bd3a385e893f7"),
+  name: 'Tire Pump',
+  price: -20,
+  isOnSale: false,
+  categories: [ 'Bike' ],
+  __v: 0
+}
+```
+
+You can see that it didn't yell at use for have the price be lower than the `min` option. So, lets use `runValidators` and set it to true.
+
+```js
+const mongoose = require('mongoose');
+
+main();
+
+const Product = mongoose.model('Product', {
+    name: {
+        type: String,
+        required: true,
+    },
+    price: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
+    isOnSale: {
+      type: Boolean,
+      default: false,
+    },
+  	categories: {
+      type: [String],
+      default: ['Bike'],
+    },
+});
+
+Product.findOneAndUpdate({name: 'Tire Pump'}, {price: -20}, {new: true, runValidators: true})
+    .then(data => {
+        console.log(data);
+    })
+    .catch(err => {
+        console.log(err);
+    })
+
+async function main() {
+    await mongoose.connect('mongodb://127.0.0.1:27017/shopApp');
+}
+```
+
+```shell
+% node product.js
+price: ValidatorError: Path `price` (-20) is less than minimum allowed value (0).
 ```
 

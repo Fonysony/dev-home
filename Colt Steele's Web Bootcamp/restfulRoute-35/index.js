@@ -3,7 +3,7 @@ const app = express();
 const port = 3000;
 const path = require('path');
 const methodOverride = require('method-override');
-const tweets = require('./data');
+let tweets = require('./data');
 const { v4: uuid } = require('uuid');
 
 app.use(express.urlencoded({ extended: true }));
@@ -43,19 +43,13 @@ app.patch('/comments/:id', (req, res) => {
     const newTweetText = req.body.comment;
     const tweet = tweets.find(c => c.id === id);
     tweet.comment = newTweetText;
-    res.render('comments/show', { tweet });
+    res.redirect('/comments');
 });
 
-app.get('/tacos', (req, res) => {
-    const data = req.query;
-    console.log(data);
-    res.send('GOT /tacos');
-});
-
-app.post('/sushi', (req, res) => {
-    const data = req.body;
-    console.log(data);
-    res.send('GOT /tacos');
+app.delete('/comments/:id', (req, res) => {
+    const { id } = req.params;
+    tweets = tweets.filter(c => c.id !== id);
+    res.redirect('/comments');
 });
 
 app.listen(port, () => {

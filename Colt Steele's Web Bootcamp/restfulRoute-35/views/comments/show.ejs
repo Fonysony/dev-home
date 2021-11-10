@@ -10,6 +10,9 @@
     <h1>Comment id: <%= tweet.id %></h1>
     <h2><%= tweet.comment %> - <%= tweet.username %></h2>
     <a href="/comments">Back to index</a>
-    <a href="/comments/<%= tweet.id %>/edit">Edit</a>
+    <a href="/comments/<%= tweet.id %>/edit">Edit Comment</a>
+    <form method="post" action="/comments/<%= tweet.id %>?_method=DELETE">
+        <button>Delete Comment</button>
+    </form>
 </body>
 </html>
