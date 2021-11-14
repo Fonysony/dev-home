@@ -54,13 +54,20 @@ const productSchema = new mongoose.Schema({
   },
 });
 
-productSchema.statics.fireSale = function() {
-  return this.updateMany({}, {onSale: true, price: 0});
+productSchema.methods.toggleOnSale = function() {
+  this.isOnSale = !this.isOnSale;
+  this.save();
 }
 
 const Product = mongoose.model('Product', productSchema);
 
-Product.fireSale().then(res =>console.log(res));
+const findProduct = async () => {
+  const foundProduct = await Product.findOne({name: 'Tire Pump'});
+  console.log(foundProduct);
+  foundProduct.toggleOnSale();
+}
+
+findProduct();
 
 async function main() {
   await mongoose.connect('mongodb://127.0.0.1:27017/shopApp');

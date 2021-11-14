@@ -386,6 +386,133 @@ async function main() {
 
 The `this` keyword refers to the `Product` model. 
 
+
+
+## Query Helpers
+
+You can also add query helper functions, which are like instance methods but for mongoose queries. Query helper methods let you extend mongoose's [chainable query builder API](https://mongoosejs.com/docs/queries.html).
+
+```javascript
+  animalSchema.query.byName = function(name) {
+    return this.where({ name: new RegExp(name, 'i') })
+  };
+
+  const Animal = mongoose.model('Animal', animalSchema);
+
+  Animal.find().byName('fido').exec((err, animals) => {
+    console.log(animals);
+  });
+
+  Animal.findOne().byName('fido').exec((err, animal) => {
+    console.log(animal);
+  });
+```
+
+
+
+## Virtuals
+
+[Virtuals](https://mongoosejs.com/docs/api.html#schema_Schema-virtual) are document properties that you can get and set but that do not get persisted to MongoDB. The getters are useful for formatting or combining fields, while setters are useful for de-composing a single value into multiple values for storage.
+
+```javascript
+  // define a schema
+  const personSchema = new Schema({
+    name: {
+      first: String,
+      last: String
+    }
+  });
+
+  // compile our model
+  const Person = mongoose.model('Person', personSchema);
+
+  // create a document
+  const axl = new Person({
+    name: { first: 'Axl', last: 'Rose' }
+  });
+```
+
+Suppose you want to print out the person's full name. You could do it yourself:
+
+```javascript
+console.log(axl.name.first + ' ' + axl.name.last); // Axl Rose
+```
+
+But [concatenating](https://masteringjs.io/tutorials/fundamentals/string-concat) the first and last name every time can get cumbersome. And what if you want to do some extra processing on the name, like [removing diacritics](https://www.npmjs.com/package/diacritics)? A [virtual property getter](https://mongoosejs.com/docs/api.html#virtualtype_VirtualType-get) lets you define a `fullName` property that won't get persisted to MongoDB.
+
+```javascript
+personSchema.virtual('fullName').get(function() {
+  return this.name.first + ' ' + this.name.last;
+});
+```
+
+Now, mongoose will call your getter function every time you access the `fullName` property:
+
+```javascript
+console.log(axl.fullName); // Axl Rose
+```
+
+
+
+```js
+const mongoose = require('mongoose');
+main();
+
+const personSchema = new mongoose.Schema({
+  first: String,
+  last: String,
+});
+
+personSchema.virtual('fullName').get(function() {
+  return `${this.first} ${this.last}`;
+});
+
+const Person = mongoose.model('Person', personSchema);
+const tammy = new Person({first: 'Tammy', last: 'Chow'});
+tammy.fullName = 'William Santos';
+console.log(tammy.fullName);
+
+async function main() {
+  await mongoose.connect('mongodb://localhost:27017/shopApp');
+}
+```
+
+The `fullName` getter function grabs the `first` and `last` properties on the `Person` model and returns a string template literal of `first` and `last`. Remember that this property exists not in the database at all, but on the Mongoose in JavaScript.
+
+You can see that you can't change what `fullName` is, why is that? It's because we haven't set up a setter function to that when we set a new value to `fullName` it sets it for us.
+
+```js
+const mongoose = require('mongoose');
+main();
+
+const personSchema = new mongoose.Schema({
+  first: String,
+  last: String,
+});
+
+personSchema.virtual('fullName').get(function() {
+    return this.first + ' ' + this.last;
+}).set(function(name) {
+  this.first = name.substr(0, v.indexOf(' '));
+  this.last = name.substr(v.indexOf(' ') + 1);
+});
+
+const Person = mongoose.model('Person', personSchema);
+const tammy = new Person({first: 'Tammy', last: 'Chow'});
+tammy.fullName = 'William Santos';
+console.log(tammy.fullName);
+
+async function main() {
+  await mongoose.connect('mongodb://localhost:27017/shopApp');
+}
+```
+
+Here the setter function has an parameter that gives you the thing you set `fullName` to, like this `Tammy.fullName = 'William Santos';`. In the setter function `name` will be 'William Santos' because that's what I'm setting `fullName` to be.
+
+It then `this` grabs the `Person` model, which is `tammmy`, I'm calling `fullName` from and sets it's `first` and `last` properties to `name`. 
+
+
+
 ## EXAMPLE!!!!
 
 ```js
@@ -583,6 +710,8 @@ async function main() {
 
 This will take some time so, `.insertMany()` returns a promise. We do not need to use the `.save()` method inorder to save our movies into MongoDB.
 
+`insertMany()` in Mongoose, if anything does not pass validation, then nothing will be interested by default. 
+
 # Queries
 
 A mongoose query can be executed in one of two ways. First, if you pass in a `callback` function, Mongoose will execute the query asynchronously and pass the results to the `callback`.
@@ -692,6 +821,281 @@ try {
   //   at process._tickCallback (internal/process/next_tick.js:68:7)
   err.stack;
 }
+```
+
+
+
+# Middleware
+
+Middleware (also called pre and post *hooks*) are functions which are passed control during execution of asynchronous functions. Middleware is specified on the schema level and is useful for writing [plugins](https://mongoosejs.com/docs/plugins.html).
+
+## Types of Middleware
+
+Mongoose has 4 types of middleware: document middleware, model middleware, aggregate middleware, and query middleware. Document middleware is supported for the following document functions. In document middleware functions, `this` refers to the document.
+
+- [validate](https://mongoosejs.com/docs/api/document.html#document_Document-validate)
+- [save](https://mongoosejs.com/docs/api/model.html#model_Model-save)
+- [remove](https://mongoosejs.com/docs/api/model.html#model_Model-remove)
+- [updateOne](https://mongoosejs.com/docs/api/document.html#document_Document-updateOne)
+- [deleteOne](https://mongoosejs.com/docs/api/model.html#model_Model-deleteOne)
+- [init](https://mongoosejs.com/docs/api/document.html#document_Document-init) (note: init hooks are [synchronous](https://mongoosejs.com/docs/middleware.html#synchronous))
+
+### Query Middleware 
+
+Query middleware is supported for the following Model and Query functions. In query middleware functions, `this` refers to the query.
+
+- [count](https://mongoosejs.com/docs/api.html#query_Query-count)
+- [countDocuments](https://mongoosejs.com/docs/api/query.html#query_Query-countDocuments)
+- [deleteMany](https://mongoosejs.com/docs/api.html#query_Query-deleteMany)
+- [deleteOne](https://mongoosejs.com/docs/api.html#query_Query-deleteOne)
+- [estimatedDocumentCount](https://mongoosejs.com/docs/api/query.html#query_Query-estimatedDocumentCount)
+- [find](https://mongoosejs.com/docs/api.html#query_Query-find)
+- [findOne](https://mongoosejs.com/docs/api.html#query_Query-findOne)
+- [findOneAndDelete](https://mongoosejs.com/docs/api.html#query_Query-findOneAndDelete)
+- [findOneAndRemove](https://mongoosejs.com/docs/api.html#query_Query-findOneAndRemove)
+- [findOneAndReplace](https://mongoosejs.com/docs/api/query.html#query_Query-findOneAndReplace)
+- [findOneAndUpdate](https://mongoosejs.com/docs/api.html#query_Query-findOneAndUpdate)
+- [remove](https://mongoosejs.com/docs/api.html#model_Model.remove)
+- [replaceOne](https://mongoosejs.com/docs/api/query.html#query_Query-replaceOne)
+- [update](https://mongoosejs.com/docs/api.html#query_Query-update)
+- [updateOne](https://mongoosejs.com/docs/api.html#query_Query-updateOne)
+- [updateMany](https://mongoosejs.com/docs/api.html#query_Query-updateMany)
+
+### Model Middleware
+
+Model middleware is supported for the following model functions. In model middleware functions, `this` refers to the model.
+
+- [insertMany](https://mongoosejs.com/docs/api.html#model_Model.insertMany)
+
+All middleware types support pre and post hooks. How pre and post hooks work is described in more detail below.
+
+## Pre
+
+Pre middleware functions are executed one after another, when each middleware calls `next`.
+
+```javascript
+const schema = new Schema(..);
+schema.pre('save', function(next) {
+  // do stuff
+  next();
+});
+```
+
+In [mongoose 5.x](http://thecodebarbarian.com/introducing-mongoose-5.html#promises-and-async-await-with-middleware), instead of calling `next()` manually, you can use a function that returns a promise. In particular, you can use [`async/await`](http://thecodebarbarian.com/common-async-await-design-patterns-in-node.js.html).
+
+```javascript
+schema.pre('save', function() {
+  return doStuff().
+    then(() => doMoreStuff());
+});
+
+// Or, in Node.js >= 7.6.0:
+schema.pre('save', async function() {
+  await doStuff();
+  await doMoreStuff();
+});
+```
+
+If you use `next()`, the `next()` call does **not** stop the rest of the code in your middleware function from executing. Use [the early `return` pattern](https://www.bennadel.com/blog/2323-use-a-return-statement-when-invoking-callbacks-especially-in-a-guard-statement.htm) to prevent the rest of your middleware function from running when you call `next()`.
+
+```javascript
+const schema = new Schema(..);
+schema.pre('save', function(next) {
+  if (foo()) {
+    console.log('calling next!');
+    // `return next();` will make sure the rest of this function doesn't run
+    /*return*/ next();
+  }
+  // Unless you comment out the `return` above, 'after next' will print
+  console.log('after next');
+});
+```
+
+
+
+### Use Cases
+
+Middleware are useful for atomizing model logic. Here are some other ideas:
+
+- complex validation
+- removing dependent documents (removing a user removes all their blogposts)
+- asynchronous defaults
+- asynchronous tasks that a certain action triggers
+
+### Erros in Pre Hooks
+
+If any pre hook errors out, mongoose will not execute subsequent middleware or the hooked function. Mongoose will instead pass an error to the callback and/or reject the returned promise. There are several ways to report an error in middleware:
+
+```javascript
+schema.pre('save', function(next) {
+  const err = new Error('something went wrong');
+  // If you call `next()` with an argument, that argument is assumed to be
+  // an error.
+  next(err);
+});
+
+schema.pre('save', function() {
+  // You can also return a promise that rejects
+  return new Promise((resolve, reject) => {
+    reject(new Error('something went wrong'));
+  });
+});
+
+schema.pre('save', function() {
+  // You can also throw a synchronous error
+  throw new Error('something went wrong');
+});
+
+schema.pre('save', async function() {
+  await Promise.resolve();
+  // You can also throw an error in an `async` function
+  throw new Error('something went wrong');
+});
+
+// later...
+
+// Changes will not be persisted to MongoDB because a pre hook errored out
+myDoc.save(function(err) {
+  console.log(err.message); // something went wrong
+});
+```
+
+Calling `next()` multiple times is a no-op. If you call `next()` with an error `err1` and then throw an error `err2`, mongoose will report `err1`.
+
+
+
+### Example
+
+```js
+const mongoose = require('mongoose');
+main();
+
+const personSchema = new mongoose.Schema({
+  first: String,
+  last: String,
+});
+
+personSchema.pre('save', async function() {
+  this.first = 'Yo';
+  this.last = 'Mama';
+  console.log('ABOUT TO SAVE!!!');
+});
+personSchema.post('save', async function() {
+  console.log('JUST SAVED!!!');
+});
+
+async function main() {
+  await mongoose.connect('mongodb://localhost:27017/shopApp');
+}
+```
+
+We have two middleware async function, `personSchema.pre()` and  `personSchema.post()`, that runs `pre('save')` and `post('save')`.
+
+In the `pre('save')` meaning before saving, I set the `personSchema`, or who ever calls `.save()`, `first` and `last` properties to 'Yo' and 'Mama' to test out the pre saving.
+
+For `post('save)` meaning after saving, I have set a `console.log()` to print out `SAVED!!` so that we know a `Person` model just called the `save()` method.
+
+```js
+const mongoose = require('mongoose');
+main();
+
+const personSchema = new mongoose.Schema({
+  first: String,
+  last: String,
+});
+
+personSchema.pre('save', async function() {
+  this.first = 'Yo';
+  this.last = 'Mama';
+  console.log('ABOUT TO SAVE!!!');
+});
+personSchema.post('save', async function() {
+  console.log('JUST SAVED!!!');
+});
+
+const Person = mongoose.model('Person', personSchema);
+
+const nafee = new Person({first: 'Nafee', last: 'Wrld'});
+const willy = new Person({first: 'William', last: 'Santos'});
+nafee.save();
+willy.save();
+Person.find({}).exec(async (err, res) => await console.log(res));
+
+
+async function main() {
+  await mongoose.connect('mongodb://localhost:27017/shopApp');
+}
+```
+
+```shell
+% node person.js
+ABOUT TO SAVE!!!
+ABOUT TO SAVE!!!
+[]
+JUST SAVED!!!
+JUST SAVED!!!
+```
+
+You can see here the the `Person.find()` didn't print anything because `nafee` and `willy` wasn't saved to the db when `Person.find()` was executed. To fix this all we gotta do is wait for it to save.
+
+```js
+const mongoose = require('mongoose');
+main();
+
+const personSchema = new mongoose.Schema({
+  first: String,
+  last: String,
+});
+
+personSchema.pre('save', async function() {
+    console.log(`About SAVE ${this.first}!!`);
+    this.first = 'Yo';
+    this.last = 'Mama';
+});
+personSchema.post('save', async function() {
+    console.log(`JUST SAVED ${this.first}!!`);
+});
+
+const Person = mongoose.model('Person', personSchema);
+
+const nafee = new Person({first: 'Nafee', last: 'Wrld'});
+const willy = new Person({first: 'William', last: 'Santos'});
+
+const print = async () => {
+    await nafee.save();
+    await willy.save();
+    await Person.find({}).exec((err, res) => console.log(res));
+}
+
+print();
+
+
+
+async function main() {
+  await mongoose.connect('mongodb://localhost:27017/shopApp');
+}
+```
+
+```shell
+% node person.js
+About SAVE Nafee!!
+JUST SAVED Yo!!
+About SAVE William!!
+JUST SAVED Yo!!
+[
+  {
+    _id: new ObjectId("618d3bdb061e49ea164af857"),
+    first: 'Yo',
+    last: 'Mama',
+    __v: 0
+  },
+  {
+    _id: new ObjectId("618d3bdb061e49ea164af858"),
+    first: 'Yo',
+    last: 'Mama',
+    __v: 0
+  }
+]
 ```
 
 

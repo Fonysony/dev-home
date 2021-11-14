@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= product.name %></title>
+</head>
+<body>
+    <h1>Editing <%= product.name %></h1>
+    <form action="/products/<%= product._id %>?_method=PUT" method="POST">
+        <label for="name">Name of Product</label>
+        <input type="text" name="name" id="name" placeholder="product name" value="<%= product.name %>">
+        <label for="price">Price of (Unit)</label>
+        <input type="number" name="price" id="price" placeholder="price" value="<%= product.price %>">
+        <label for="category">Select Category</label>
+        <select name="category" id="category">
+            <% console.log(typeof product.category, `Product: ${product.category}`); %> 
+            <% for(let category of categories) { %>
+                <% console.log(typeof category, `Category: ${category}`); %>  
+                <option value="<%= category %>" <%= product.category === category ? 'selected': '' %>><%= category %></option>
+            <% } %> 
+        </select>
+        <button>Submit</button>
+    </form>
+    <a href="/products/<%= product._id %>">Cancel</a>
+</body>
+</html>
