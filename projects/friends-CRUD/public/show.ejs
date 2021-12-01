@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Showing <%= friend.fullName %></title>
+</head>
+<body>
+    <h1>Showing <%= friend.fullName %></h1>
+    <ul>
+        <li><b>Id:</b> <%= friend._id %></li> 
+        <li><b>Status:</b> <a href="/friend/home?status=<%= friend.status %>"><%= friend.status %></a></li>
+        <li><b>Age:</b> <%= friend.age %></li>
+    </ul>
+    <a href="/friend/home">Show All Friends</a>
+    <a href="/friend/<%= friend._id %>/edit">Edit <%= friend.fullName %></a>
+    <form action="/friend/<%= friend._id %>?_method=DELETE" method="post">
+        <button>Delete Friend</button>
+    </form>
+</body>
+</html>

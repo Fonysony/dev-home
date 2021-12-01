@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editing <%= friend.fullName %></title>
+</head>
+<body>
+    <h1>Editing <%= friend.fullName %></h1>
+    <form action="/friend/<%= friend._id %>?_method=PUT" method="post">
+        <label for="firstName">First Name</label>
+        <input type="text" name="name.first" id="firstName" value="<%= friend.name.first %>">
+        <label for="lastName">Last Name</label>
+        <input type="text" name="name.last" id="lastName" value="<%= friend.name.last %>">
+        <label for="status">Status</label>
+        <select name="status" id="status">
+            <% for (let i = 0; i < friendStatuses.length; i++) { %> 
+                <option value="<%= friendStatuses[i] %>" <%= friend.status === friendStatuses[i] ? "selected": "" %>><%= capedStatuses[i] %></option>
+            <% } %> 
+        </select>
+        <label for="age">Age</label>
+        <input type="text" name="age" id="age" value="<%= friend.age %>">
+        <button>Save</button>
+    </form>
+</body>
+</html>

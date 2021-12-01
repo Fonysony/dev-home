@@ -29,7 +29,7 @@ If you haven't already, install EJS into your project, you don't need to `requir
 
 ### view
 
-`view` is a property on `.set()` it's A directory or an array of directories for the application's views. If an array, the views are looked up in the order they occur in the array.
+`view` is a property on `.set()` it's a directory or an array of directories the application's views. If an array, the views are looked up in the order they occur in the array.
 
 By default, when we create a new Express app and we're using some `view engine`, Express is going to assume that our views or templates exist in a directory called `/views`.   This is the deafult of `view` `process.cwd() + '/views'`. 
 
@@ -127,7 +127,7 @@ app.listen(port, () => {
 
 There is a module built into Express called `path`. `path` has a method called `.join()`. Our current directory name where this script is located, `index.js`, is joining with the full path to get to `/views`.
 
-Basically is, instead of being the current working directory of where I executed the file or Node from it will use the directory name (`__dirname`)  of where `index.js` is or `__dirname`.
+Basically is, instead of being the current working directory of where I executed the file or Node from, it will use the directory name (`__dirname`)  of where `index.js` is or `__dirname`.
 
 ### EJS Syntax
 
@@ -266,7 +266,7 @@ app.listen(port, () => {
 
 ### Serving Static Assets in Express
 
-Serving static files refers to serving things like CSI and JavaScript files that we want to include in the response back to the client side. Often time we're going to have some styles need to be run and some JavaScript that needs to run in the browser, we want to include those into our response. To do that we need to serve those assets, we need to use `express.static()`.
+Serving static files refers to serving things like CSS and JavaScript files that we want to include in the response back to the client side. Often time we're going to have some styles need to be run and some JavaScript that needs to run in the browser, we want to include those into our response. To do that we need to serve those assets, we need to use `express.static()`.
 
 ### express.static(root, [options])
 

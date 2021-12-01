@@ -492,9 +492,9 @@ const personSchema = new mongoose.Schema({
 
 personSchema.virtual('fullName').get(function() {
     return this.first + ' ' + this.last;
-}).set(function(name) {
-  this.first = name.substr(0, v.indexOf(' '));
-  this.last = name.substr(v.indexOf(' ') + 1);
+}).set(function(newStr) {
+  this.first = newStr.substr(0, newStr.indexOf(' '));
+  this.last = newStr.substr(newStr.indexOf(' ') + 1);
 });
 
 const Person = mongoose.model('Person', personSchema);

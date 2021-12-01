@@ -61,9 +61,9 @@ app.put('/products/:id', async (req, res) => {
 
 });
 
-app.delete('/products/:id', async(req, res) => {
-    const { id } = req.param;
-    const deletedProduct = Product.findByIdAndDelete(id);
+app.delete('/products/:id', (req, res) => {
+    const { id } = req.params;
+    Product.findByIdAndDelete(id);
     res.redirect('/products');
 });
 

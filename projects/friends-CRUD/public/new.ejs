@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create a New Friend</title>
+</head>
+<body>
+    <h1>Create a New Friend</h1>
+    <form action="/friend/home" method="post">
+        <label for="firstName">First Name:</label>
+        <input type="text" name="name.first" id="firstName" placeholder="Enter friend's first name">
+        <label for="lastName">Last Name:</label>
+        <input type="text" name="name.last" id="lastName" placeholder="Enter friend's last name">
+        <label for="status">Select Friends Status</label>
+        <select name="status" id="status">
+            <% for (let i = 0; i < friendStatuses.length; i++) { %> 
+                <option value="<%= friendStatuses[i] %>"><%= capedStatuses[i] %> </option>
+            <% } %> 
+        </select>
+        <button>Submit</button>
+    </form>
+</body>
+</html>
