@@ -220,7 +220,7 @@ class Color {
 }
 ```
 
-When creating classes or constructor functions you capitalize the first letter to let you know that this object creates other objects. You the keyword class to let JS know that we are creating a class here. The next thing is the constructor, we always add this in when using classes, a constructor is a function that will execute immediately whenever a new color is created. 
+When creating classes or constructor functions you capitalize the first letter to let you know that this object creates other objects. You use the keyword class to let JS know that we are creating a class here. The next thing is the constructor, we always add this in when using classes, a constructor is a function that will execute immediately whenever a new color is created. 
 
 ```js
 class Color {

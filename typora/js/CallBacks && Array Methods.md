@@ -520,7 +520,52 @@ const movies = [
 
 movies.some(movie => movie.year > 2015); // true
 ```
+## .some() Parameters / Examples
 
+The .some() method take in 3 parameters, but a callback function is required. Within the callback function the 3 parameters are:
+
+  - value: Required, the value of the current element being processed in the array.
+
+  - index: Optional, the index of the current element being processed in the array.
+
+  - array: Optional, the array .some() was called upon.
+
+```js
+const object = {
+    array: [{x: 2, y: 4}, {x: 7, y: 6}, {x: 6, y: 8}, {x: 6, y: 7}],
+};
+
+console.log(object.array.some(function(value, index, array) {
+    console.log('Current Element:', value);
+    console.log('Index:', index);
+    console.log('Array:', array);
+    
+    // console.log('This Keyword:', this);
+}));
+```
+
+```shell
+Current Element: { x: 2, y: 4 }
+Index: 0
+Array: [ { x: 2, y: 4 }, { x: 7, y: 6 }, { x: 6, y: 8 }, { x: 6, y: 7 } ]
+Current Value: { x: 7, y: 6 }
+Index: 1
+Array: [ { x: 2, y: 4 }, { x: 7, y: 6 }, { x: 6, y: 8 }, { x: 6, y: 7 } ]
+Current Value: { x: 6, y: 8 }
+Index: 2
+Array: [ { x: 2, y: 4 }, { x: 7, y: 6 }, { x: 6, y: 8 }, { x: 6, y: 7 } ]
+Current Value: { x: 6, y: 7 }
+Index: 3
+Array: [ { x: 2, y: 4 }, { x: 7, y: 6 }, { x: 6, y: 8 }, { x: 6, y: 7 } ]
+false
+```
+
+In this example we have an object literals/Initializer that contains a property value of an array. We are using .some() to iterate through the array.
+the first parameter is required in the callback function is the 'value' which is the current element being processed in the array. Second parameter is optional is the index, the index of the element being processed or how many times the loop has ran if plus with 1, like the for loop.
+The third parameter is optional is the array .some() is being called upon.
+
+If the .some() callback function returns true, it immediately stops the process.
+.some() returns true if, in the array, it finds an element that the provided callback function returns true, otherwise it returns false at the end of the procees. .some() doesn't modify the provided array.
 
 
 ## The Notrious Reduce Method

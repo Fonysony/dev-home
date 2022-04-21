@@ -1,8 +1,14 @@
-Objects
+Objects Literals/initializer
 
 - Objects are collections of properties.
-- Properties are a key -value pair
+- Properties are a `key: value` pair.
 - Rather than accessing data using an index, we use custom keys.
+
+```js
+const object {
+    nameOfKey: 2, // This whole thing is called a property, the name of the property or the 'key' is called 'nameOfKey' and it's 'value' is 2
+};
+```
 
 const fitBitData = {
 

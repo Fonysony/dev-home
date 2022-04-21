@@ -12,7 +12,7 @@ String Template Literals
 
 Template literals are strings that allow embedded expressions, which will be evaluated and then turned into a resulting string
 
-'I counted ${3 + 4} sheep; // "I counted 7 sheep"'
+`I counted ${3 + 4} sheep; // "I counted 7 sheep"`
 
 You have to use the back-ticks not single quotes (```````);
 
