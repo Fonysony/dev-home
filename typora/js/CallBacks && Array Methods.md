@@ -683,8 +683,6 @@ const evensTotal = evens.reduce((sum, num) => {
 });
 ```
 
-
-
 ## Arrow Functions & 'this'
 
 ```js
