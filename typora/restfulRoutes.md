@@ -87,7 +87,7 @@ Contains key-value pairs of data submitted in the request body. By default, it i
 The following example shows how to use body-parsing middleware to populate `req.body`.
 
 ```js
-const app = require('express')()
+const app = require('express')
 const bodyParser = require('body-parser')
 const multer = require('multer') // v1.0.5
 const upload = multer() // for parsing multipart/form-data
@@ -113,13 +113,13 @@ Returns middleware that only parses urlencoded bodies and only looks at requests
 
 A new `body` object containing the parsed data is populated on the `request` object after the middleware (i.e. `req.body`), or an empty object (`{}`) if there was no body to parse, the `Content-Type` was not matched, or an error occurred. This object will contain key-value pairs, where the value can be a string or array (when `extended` is `false`), or any type (when `extended` is `true`).
 
-`extended` is a property, This option allows to choose between parsing the URL-encoded data with the `querystring` library (when `false`) or the `qs` library (when `true`). The “extended” syntax allows for rich objects and arrays to be encoded into the URL-encoded format, allowing for a JSON-like experience with URL-encoded. For more information, please [see the qs library](https://www.npmjs.org/package/qs#readme). By default it is set to true, but this is deprecated so provide true or false.
+`extended` is a property, This option allows to choose between parsing the URL-encoded data with the `querystring` library (when `false`) or the `qs` library (when `true`). The `extended` syntax allows for rich objects and arrays to be encoded into the URL-encoded format, allowing for a JSON-like experience with URL-encoded. For more information, please [see the qs library](https://www.npmjs.org/package/qs#readme). By default it is set to true, but this is deprecated so provide true or false.
 
 ```js
 app.use(express.urlencoded({ extended: true }));
 ```
 
-This parses form-coded information from the request body. `.use()` method is a way to run on every single request, it doesn't matter what type of request it is or it's path name. It's a middleware and it's telling Express to parse the request body as urlencoded data. 
+This parses form-coded information from the request body. The `.use()` method is a way to run on every single request, it doesn't matter what type of request it is or it's path name. It's a middleware and it's telling Express to parse the request body as urlencoded data. 
 
 URL encoded data **describes form data that is sent in a single block in the HTTP message body**. Unlike the query part of the URL in a GET request, the length of the data is unrestricted. This is unually used with form data.
 

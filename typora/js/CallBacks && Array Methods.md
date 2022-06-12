@@ -545,7 +545,7 @@ console.log(object.array.some(function(value, index, array) {
 ```
 
 ```shell
-Current Element: { x: 2, y: 4 }
+Current Value: { x: 2, y: 4 }
 Index: 0
 Array: [ { x: 2, y: 4 }, { x: 7, y: 6 }, { x: 6, y: 8 }, { x: 6, y: 7 } ]
 Current Value: { x: 7, y: 6 }

@@ -4,14 +4,17 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node index.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "ejs": "^3.1.6",
+    "ejs": "^3.1.7",
+    "ejs-mate": "github:nax3t/ejs-mate",
     "express": "^4.17.1",
+    "joi": "^17.6.0",
+    "method-override": "^3.0.0",
     "mongoose": "^6.0.13"
   }
 }

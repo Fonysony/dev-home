@@ -1,9 +1,10 @@
-const express = require("express");
-const path = require("path");
-const mongoose = require("mongoose");
+const express = require('express');
+const path = require('path');
+const mongoose = require('mongoose');
+const ejsMate = require('ejs-mate');
 const methodOverride = require('method-override');
-const Friend = require("./models/friend.js");
-const friendStatuses = Friend.schema.path("status").enumValues;
+const Friend = require('./models/friend.js');
+const friendStatuses = Friend.schema.path('status').enumValues;
 const ok = 'ok';
 console.log(ok[1]);
 
@@ -13,9 +14,10 @@ main("friendApp");
 
 app.use(methodOverride('_method'));
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static(path.join(__dirname, "/public")));
-app.set("views", path.join(__dirname, "/public"));
-app.set("view engine", "ejs");
+app.use(express.static(path.join(__dirname, '/public')));
+app.engine('ejs', ejsMate);
+app.set('views', path.join(__dirname, '/public'));
+app.set('view engine", "ejs');
 
 app.get("/friend/home", async (req, res) => {
 	const { status } = req.query;
