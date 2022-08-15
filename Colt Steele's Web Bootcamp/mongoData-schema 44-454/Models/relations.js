@@ -35,10 +35,8 @@ const Farm = mongoose.model('Farm', farmSchema);
 //    { name: 'Asparagus', price: 3.99, season: 'Spring'}, 
 // ]);
 
-const makeFarm = async function() {
-    const farm = new Farm({ name: 'Fully Belly Farms', city: 'Guinda, CA' });
-    const melon = await Product.findOne({ name: 'Goddess Melon' });
-    farm.products.push(melon);
-    console.log(farm);
-}
+const dick = new Farm({ name: 'DICK', city: 'Bloomington'});
+console.log(dick);
+
+module.exports = Farm;
 

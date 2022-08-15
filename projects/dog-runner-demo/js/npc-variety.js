@@ -6,16 +6,19 @@ document.addEventListener('load', () => {
     canvas.height = 800;
 
     class Game {
-        constructor() {
+        constructor(ctx, width, height) {
+            this.ctx = ctx;
+            this.width = width;
+            this.height = height;
             this.enemies = [];
             this.#addNewEnemy();
             console.log(this.enemies);
         }
         update() {
-
+            this.enemies.forEach(object => object.update());
         }
         draw() {
-
+            this.enemies.forEach(object => object.draw());
         }
         #addNewEnemy() {
             this.enemies.push(new Enemy());
@@ -39,12 +42,13 @@ document.addEventListener('load', () => {
 
     const game = new Game();
 
-    let lastTime = 1;
+    let lastTime = 0;
     
     function animate(timestap) {
             const deltaTime = timestap - lastTime;
             lastTime = timestap;
-            console.log(deltaTime);
+            game.update();
+            game.draw();
             window.requestAnimationFrame(animate);
     }
     animate(0);
