@@ -1,5 +1,6 @@
 const express = require('express');
 const morgan = require('morgan');
+const AppError = require('./AppError.js');
 const app = express();
 const port = 3000;
 
@@ -62,6 +63,10 @@ app.get('/', (req, res) => {
     res.send('HOME PAGE!');
 });
 
+app.get('/error', (req, res) => {
+    chicken.fly();
+});
+
 app.get('/dogs', (req, res) => {
     console.log(`REQUEST DATE: ${req.requestTime}`);
     res.send('WOOF WOOF!');
@@ -71,8 +76,17 @@ app.get('/secret', verifyPassword, (req, res) => {
     res.send("Yawei Chan is my idol and I can't stop thinking about her!!");
 });
 
+app.get('/admin', (req, res) => {
+    throw new AppError(403, `You're not an admin!`);
+});
+
 app.use((req, res)   => {
     res.status(404).send('NOT FOUND!');
+});
+
+app.use((err, req, res, next) => {
+    const { status = 500, message = 'Something went wrong!' } = err;
+    res.status(status).send(message);
 });
 
 app.listen(port, () => {
