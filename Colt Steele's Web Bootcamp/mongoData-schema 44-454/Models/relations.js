@@ -16,7 +16,7 @@ const productSchema = new Schema({
     price: Number,
     season: {
         type: String,
-        enum: ['Spring', 'Summer', 'Fall', 'winter']
+        enum: ['Spring', 'Summer', 'Fall', 'Winter']
     }
 });
 
